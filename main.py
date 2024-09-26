@@ -452,43 +452,33 @@ def main():
             break
 
         # Head Pose Estimation
-        head_pose_frame = process_head_pose(frame.copy(), face_mesh_head_pose)
+        frame = process_head_pose(frame, face_mesh_head_pose)
 
         # Cell Phone Detection
         cell_phone_results = detect_cell_phone(frame, yolo_model)
-        cell_phone_frame, _ = process_cell_phone(frame.copy(), cell_phone_results)
+        frame = process_cell_phone(frame, cell_phone_results)
 
         # Mouth Opening Detection
-        mouth_results, mouth_frame = process_mouth_image(frame.copy(), face_mesh_mouth)
+        if isinstance(frame, tuple):  # Check if frame is a tuple
+            frame = frame[0]  # If it's a tuple, use the first element
+        mouth_results, _ = process_mouth_image(frame, face_mesh_mouth)
         if mouth_results.multi_face_landmarks:
             for face_landmarks in mouth_results.multi_face_landmarks:
-                landmarks_px = get_landmarks(face_landmarks, mouth_frame.shape)
+                landmarks_px = get_landmarks(face_landmarks, frame.shape)
                 current_time = time.time()
                 cheating_detected, mouth_open_start_time, mouth_open_times = detect_mouth_opening(
                     landmarks_px, threshold, current_time, mouth_open_start_time, mouth_open_times,
                     cheating_duration_threshold, cheating_period
                 )
-                mouth_frame = draw_mouth_results(mouth_frame, cheating_detected, mouth_open_times, cheating_frequency_threshold)
+                frame = draw_mouth_results(frame, cheating_detected, mouth_open_times, cheating_frequency_threshold)
 
         # Webcam Object Detection
         blob, h, w = preprocess_frame(frame)
         detected_objects = detect_objects(ssd_net, blob)
-        webcam_frame = process_detections(frame.copy(), detected_objects, classes, colors, 0.2, h, w)
-
-        # Combine all frames
-        top_row = cv2.hconcat([head_pose_frame, cell_phone_frame])
-        bottom_row = cv2.hconcat([mouth_frame, webcam_frame])
-        combined_frame = cv2.vconcat([top_row, bottom_row])
-
-        # Resize if the combined frame is too large
-        scale_percent = 50  # percent of original size
-        width = int(combined_frame.shape[1] * scale_percent / 100)
-        height = int(combined_frame.shape[0] * scale_percent / 100)
-        dim = (width, height)
-        resized_frame = cv2.resize(combined_frame, dim, interpolation=cv2.INTER_AREA)
+        frame = process_detections(frame, detected_objects, classes, colors, 0.2, h, w)
 
         # Display the combined frame
-        cv2.imshow('Combined Detection Systems', resized_frame)
+        cv2.imshow('Combined Detection Systems', frame)
 
         if cv2.waitKey(5) & 0xFF == 27:  # Exit on ESC
             break
