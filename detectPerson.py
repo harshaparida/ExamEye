@@ -176,11 +176,81 @@
 #
 #     return frame
 
+# import numpy as np
+# import cv2
+#
+#
+# def load_model(prototxt_path, model_path):
+#     return cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
+#
+#
+# def initialize_classes_and_colors():
+#     classes = {15: "person", 25: "phone"}
+#     np.random.seed(543210)
+#     colors = np.random.uniform(0, 255, size=(max(classes.keys()) + 1, 3))
+#     return classes, colors
+#
+#
+# def initialize_capture(source=0):
+#     return cv2.VideoCapture(source)
+#
+#
+# def preprocess_frame(frame):
+#     (h, w) = frame.shape[:2]
+#     blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 0.007843, (300, 300), 127.5)
+#     return blob, h, w
+#
+#
+# def detect_objects(net, blob):
+#     net.setInput(blob)
+#     return net.forward()
+#
+#
+# def process_detections(frame, detected_objects, classes, colors, min_confidence, h, w):
+#     for i in range(detected_objects.shape[2]):
+#         confidence = detected_objects[0, 0, i, 2]
+#         if confidence > min_confidence:
+#             class_index = int(detected_objects[0, 0, i, 1])
+#
+#             if class_index in classes:
+#                 box = detected_objects[0, 0, i, 3:7] * np.array([w, h, w, h])
+#                 (startX, startY, endX, endY) = box.astype("int")
+#
+#                 prediction_text = f"{classes[class_index]}: {confidence:.2f}"
+#                 color = tuple(map(int, colors[class_index]))
+#
+#                 cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
+#                 cv2.putText(frame, prediction_text,
+#                             (startX, startY - 15 if startY > 30 else startY + 15),
+#                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+#             else:
+#                 print(f"Class index {class_index} not found in predefined classes.")
+#
+#     return frame
+#
+#
+# def display_frame(frame, window_name="Webcam Detection"):
+#     cv2.imshow(window_name, frame)
+#     return cv2.waitKey(1) & 0xFF == ord('q')
+#
+#
+# def release_resources(cap):
+#     cap.release()
+#     cv2.destroyAllWindows()
+
+import os
 import numpy as np
 import cv2
 
 
 def load_model(prototxt_path, model_path):
+    # Get the absolute file path to the current directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Load the SSD model
+    prototxt_path = os.path.join(current_dir, 'models', 'MobileNetSSD_deploy.prototxt')
+    model_path = os.path.join(current_dir, 'models', 'MobileNetSSD_deploy.caffemodel')
+
     return cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
 
 

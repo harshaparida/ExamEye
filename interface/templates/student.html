@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="static/student.css">
+</head>
+<body>
+    <div class="container">
+        <div class="profile">
+            <img src="{{ photo }}" alt="Profile Picture">
+            <h2>{{ full_name }}</h2>
+        </div>
+        <div class="exam-info">
+            <h2>Exam Information</h2>
+            <p>Exam Name: <strong>Mathematics</strong></p>
+            <p>Exam Duration: <strong>60 minutes</strong></p>
+            <p>Exam Instructions: <strong>Please read the instructions carefully before starting the exam.</strong></p>
+            <button class="start-exam-btn" onclick="window.location.href='{{ url_for('start_exam') }}'">Start Exam</button>
+        </div>
+    </div>
+</body>
+</html>
