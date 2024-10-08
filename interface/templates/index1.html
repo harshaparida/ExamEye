@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Proctoring System</title>
+</head>
+<body>
+    <h1>Online Proctoring System</h1>
+    <button id="start-proctoring-button">Start Proctoring</button>
+    <script>
+        document.getElementById("start-proctoring-button").addEventListener("click", function() {
+            fetch("/start_proctoring", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error =>
