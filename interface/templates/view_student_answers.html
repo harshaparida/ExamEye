@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Student Answers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/view_student_answers.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Answers by Student {{ student_id }}</h1>
+        <table>
+            <tr>
+                <th>Question ID</th>
+                <th>Question</th>
+                <th>Answer</th>
+                <th>Marks</th>
+            </tr>
+            {% for answer in answers %}
+            <tr>
+                <td>{{ answer.question_id }}</td>
+                {% for question in questions %}
+                {% if question.id == answer.question_id %}
+                <td>{{ question.question }}</td>
+                {% endif %}
+                {% endfor %}
+                <td>{{ answer.answer }}</td>
+                <td>{{ answer.marks }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

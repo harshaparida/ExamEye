@@ -1,9 +1,20 @@
-// Get the examination button and container elements
-const examinationButton = document.getElementById('examination-button');
-const examinationContainer = document.getElementById('examination-container');
+// logout.js
+const logoutButton = document.getElementById('logout-button');
 
-// Add an event listener to the examination button
-examinationButton.addEventListener('click', () => {
-  // Toggle the visibility of the examination container
-  examinationContainer.style.display = examinationContainer.style.display === 'block' ? 'none' : 'block';
+logoutButton.addEventListener('click', () => {
+  fetch('/logout', {
+    method: 'POST'
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    if (data.success) {
+      // Clear cache
+      window.location.reload(true);
+      // Redirect to login page
+      window.location.href = '/';
+    } else {
+      alert('Failed to log out');
+    }
+  })
+  .catch((error) => console.error(error));
 });
