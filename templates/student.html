@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="static/student.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="profile">
+            <img src="{{ photo }}" alt="Profile Picture">
+            <h2>{{ full_name }}</h2>
+            <button id="logout-button">Logout</button>
+            <script src="static/script.js"></script>
+        </div>
+        <div class="exam-info">
+            <h2>Exam Information</h2>
+            <p>Exam Name: <strong>Mathematics</strong></p>
+            <p>Exam Duration: <strong>60 minutes</strong></p>
+            <p>Exam Instructions: <strong>Please read the instructions carefully before starting the exam.</strong></p>
+            <button id="startBtn" data-exam-url="{{ url_for('exam') }}">Start Exam</button>
+        </div>
+    </div>
+    <script>
+     function requestCameraAccess() {
+            // Get the exam URL from the button's data attribute
+            const examUrl = document.getElementById('startBtn').getAttribute('data-exam-url');
+            console.log("Exam URL:", examUrl); // Check if the URL is correctly fetched
+
+            // Check if the browser supports getUserMedia
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                console.log("Browser supports getUserMedia.");
+
+                // Request camera access
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        console.log("Camera access granted."); // Camera access granted
+
+                        // Redirect to the exam page
+                        window.location.href = examUrl;
+                    })
+                    .catch(function(err) {
+                        console.error("Camera access denied: ", err); // Handle denied permission
+                        alert("Camera access is required to start the exam.");
+                    });
+            } else {
+                // Browser doesn't support getUserMedia
+                console.error("Browser does not support getUserMedia.");
+                alert("Sorry, your browser does not support camera access.");
+            }
+        }
+
+        // Add event listener to the "Start Exam" button
+        const startButton = document.getElementById('startBtn');
+        startButton.addEventListener('click', requestCameraAccess);
+    </script>
+</body>
+</html>

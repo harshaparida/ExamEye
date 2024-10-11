@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+  <h1>Admin</h1>
+<ul>
+    <li><a href="{{ url_for('upload_question') }}">Upload Question</a></li>
+    <li><a href="{{ url_for('view_questions') }}">View Questions</a></li>
+    <li><a href="{{ url_for('reset_questions') }}">Reset Questions</a></li>
+    <li><a href="{{ url_for('view_students') }}">View Students</a></li>
+</ul>
+  <button id="logout-button">Logout</button>
+  <script src="static/script.js"></script>
+
+</body>
+</html>

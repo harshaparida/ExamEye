@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Feed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/student.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="question-container">
+            <h1>Questions</h1>
+            <!-- Display questions here -->
+            <p>Question 1</p>
+            <p>Question 2</p>
+            <!-- Add more questions as needed -->
+        </div>
+        <div class="video-container">
+            <h1>Video Feed</h1>
+            <img src="{{ url_for('video_feed') }}" width="80" height="60">
+        </div>
+    </div>
+</body>
+</html>

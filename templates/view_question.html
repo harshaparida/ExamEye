@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Question</title>
+</head>
+<body>
+  <h1>Questions</h1>
+  <ul>
+      {% for question in questions %}
+          <li>{{ question.text }}</li>
+      {% endfor %}
+  </ul>
+</body>
+</html>
