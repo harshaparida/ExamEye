@@ -2,6 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eaeaea;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 {
+            background-color: #4A90E2;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            border-bottom: 3px solid #3E80B0; /* Bottom border for emphasis */
+        }
+        .dashboard-button {
+            background-color: #5C6BC0; /* Color for buttons */
+            color: white;
+            padding: 15px 30px;
+            margin: 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow transition */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+        .dashboard-button:hover {
+            background-color: #4A54F1; /* Darker shade on hover */
+            transform: translateY(-3px); /* Move button up on hover */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+        }
+        #logout-button {
+            background-color: #FF3D00; /* Color for logout button */
+            margin-top: 50px;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow transition */
+        }
+        #logout-button:hover {
+            background-color: #FF5722; /* Darker shade on hover */
+            transform: translateY(-3px); /* Move button up on hover */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+        }
+    </style>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <a href="{{ url_for('upload_question') }}">
+      <button class="dashboard-button">Upload Question</button>
+  </a>
+  <a href="{{ url_for('view_questions') }}">
+      <button class="dashboard-button">View Questions</button>
+  </a>
+  <a href="{{ url_for('reset_questions') }}">
+      <button class="dashboard-button">Reset Questions</button>
+  </a>
+  <a href="{{ url_for('view_students') }}">
+      <button class="dashboard-button">View Students</button>
+  </a>
+
+  <button id="logout-button">Logout</button>
+
+  <script src="static/script.js"></script>
+</body>
+</html>
+
     <title>Admin</title>
 </head>
 <body>
@@ -17,3 +87,4 @@
 
 </body>
 </html>
+

@@ -12,6 +12,7 @@ from detectPerson import load_model as load_ssd, initialize_classes_and_colors, 
 from flask import Flask, render_template, request, redirect, url_for
 import pymysql
 
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -34,6 +35,43 @@ def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
+
+
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Check for admin login
+        cursor.execute("SELECT * FROM admin_credentials WHERE username=%s AND password=%s",
+                       (username, password))
+        admin = cursor.fetchone()
+
+        if admin:
+            session['admin_id'] = admin['admin_id']
+            session['admin_username'] = admin['username']
+            flash("Admin login successful!")
+            cursor.close()
+            conn.close()
+            return redirect("/admin")
+
+        # Check for student/user login
+        cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s",
+                       (username, password))
+        user = cursor.fetchone()
+
+        if user:
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['full_name'] = user['full_name']
+            session['photo'] = user['photo_filename']  # Store photo filename
+            session.permanent = True  # Keep session active longer
+
+            flash("Login successful!")
+            cursor.close()
+            conn.close()
+            return redirect("/dashboard")
+
+        # If login fails
+        flash("Invalid username or password")
 
         # Check if the user is an admin
         conn = get_db_connection()
@@ -66,10 +104,12 @@ def login():
             else:
                 flash("Invalid username or password")
 
+
         cursor.close()
         conn.close()
 
     return render_template("login.html")
+
 
 # Route for admin page
 @app.route("/admin")
@@ -140,10 +180,17 @@ def logout():
     session.clear()
     return jsonify({'success': True})
 
+
+# @app.route('/exam')
+# def exam():
+#     # Your exam route code here
+#     return render_template('exam.html')
+
 @app.route('/exam')
 def exam():
     # Your exam route code here
     return render_template('exam.html')
+
 
 @app.route('/video_feed')
 def video_feed():
@@ -304,6 +351,56 @@ def view_report(student_id):
         return render_template('view_report.html', student=student_report)
     else:
         return "Student report not found", 404
+
+
+
+# student side for answering questions
+@app.route('/exam', methods=['GET', 'POST'])
+def exam():
+    if request.method == 'POST':
+        # Get a database connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Get the answers from the form
+        answers = request.form
+
+        # Insert the answers into the database
+        for question_id, answer in answers.items():
+            if question_id != 'csrf_token':  # Ignore the CSRF token
+                query = "INSERT INTO answers (question_id, student_id, text) VALUES (%s, %s, %s)"
+                cursor.execute(query, (question_id, session['user_id'], answer))
+                conn.commit()
+
+        # Close the database connection
+        cursor.close()
+        conn.close()
+
+        # Return a success message
+        flash('Answers submitted successfully!')
+        return redirect(url_for('dashboard'))
+    else:
+        # Get a database connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Execute the query to get all questions
+        query = "SELECT * FROM questions"
+        cursor.execute(query)
+        questions = cursor.fetchall()
+
+        # Print the contents of the questions variable
+        print("Questions:", questions)
+
+        # Close the database connection
+        cursor.close()
+        conn.close()
+
+        # Return the questions
+        return render_template('exam.html', questions=questions)
+
+
+
 
 
 
