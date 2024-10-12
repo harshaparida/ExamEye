@@ -3,22 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Students</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        img {
+            max-width: 100px;  /* Adjust the size of the photo as needed */
+            height: auto;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
   <h1>Students</h1>
-  <ul>
-      {% for student in students %}
-          <li>
-              {{ student.name }}
-              <ul>
-                  {% for answer in student.answers %}
-                      <li>
-                          {{ answer.question.text }}: {{ answer.text }}
-                      </li>
-                  {% endfor %}
-              </ul>
-          </li>
-      {% endfor %}
-  </ul>
+
+  <table>
+      <thead>
+          <tr>
+              <th>Photo</th>
+              <th>Username</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for student in students %}
+              <tr>
+                  <td>
+                      <img src="{{ url_for('static', filename='uploads/' ~ student.photo_filename) }}" alt="Student Photo">
+                  </td>
+                  <td>{{ student.username }}</td>
+                  <td>
+                      <form action="{{ url_for('view_report', student_id=student.id) }}" method="POST">
+                          <button type="submit">View Report</button>
+                      </form>
+                  </td>
+              </tr>
+          {% endfor %}
+      </tbody>
+  </table>
 </body>
 </html>

@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Question</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions</title>
 </head>
 <body>
-  <h1>Questions</h1>
-  <ul>
-      {% for question in questions %}
-          <li>{{ question.text }}</li>
-      {% endfor %}
-  </ul>
+    <h1>Questions</h1>
+    <ul>
+        {% for question in questions %}
+            <li>{{ question[1] }}</li>  <!-- Assuming question[1] is the question text -->
+        {% endfor %}
+    </ul>
 </body>
 </html>

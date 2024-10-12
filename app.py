@@ -10,14 +10,7 @@ from detectPhone import load_model as load_yolo, perform_detection as detect_cel
 from mouth_detection_movement import initialize_face_mesh as init_mouth_detection, process_image as process_mouth_image, get_landmarks, detect_mouth_opening, draw_results as draw_mouth_results
 from detectPerson import load_model as load_ssd, initialize_classes_and_colors, preprocess_frame, detect_objects, process_detections
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 import pymysql
-pymysql.install_as_MySQLdb()
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/Online_Proctoring_System'
-db = SQLAlchemy(app)
-
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -216,47 +209,101 @@ def gen_frames():
 
 # admin part
 
-class Question(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(200), nullable=False)
-
-class Student(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-
-class Answer(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    question = db.relationship('Question', backref=db.backref('answers', lazy=True))
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
-    student = db.relationship('Student', backref=db.backref('answers', lazy=True))
-    text = db.Column(db.String(200), nullable=False)
-
 @app.route('/upload_question', methods=['GET', 'POST'])
 def upload_question():
     if request.method == 'POST':
-        question = Question(text=request.form['question'])
-        db.session.add(question)
-        db.session.commit()
-        return redirect(url_for('view_questions'))
+        # Get the question from the form
+        question = request.form['question']
+
+        # Get a database connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Insert the question into the database
+        query = "INSERT INTO questions (text) VALUES (%s)"
+        cursor.execute(query, (question,))
+        conn.commit()
+
+        # Close the database connection
+        cursor.close()
+        conn.close()
+
+
     return render_template('upload_question.html')
 
 @app.route('/view_questions')
 def view_questions():
-    questions = Question.query.all()
-    return render_template('view_questions.html', questions=questions)
+    # Get a database connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Execute the query to get all questions
+    query = "SELECT * FROM questions"
+    cursor.execute(query)
+    questions = cursor.fetchall()
+
+    # Close the database connection
+    cursor.close()
+    conn.close()
+
+    # Return the questions
+    return render_template('view_question.html', questions=questions)
 
 @app.route('/reset_questions')
 def reset_questions():
-    Question.query.delete()
-    db.session.commit()
+    # Get a database connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Execute the query to delete all questions
+    query = "DELETE FROM questions"
+    cursor.execute(query)
+    conn.commit()
+
+    # Close the database connection
+    cursor.close()
+    conn.close()
+
+    # Redirect to the view questions page
     return redirect(url_for('view_questions'))
 
 @app.route('/view_students')
 def view_students():
-    students = Student.query.all()
-    return render_template('view_students.html', students=students)
+    # Get a database connection
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)  # Use dictionary cursor to get column names
 
+    # Execute the query to get all students
+    query = "SELECT id, username, photo_filename FROM users"
+    cursor.execute(query)
+    students = cursor.fetchall()
+
+    # Close the database connection
+    cursor.close()
+    conn.close()
+
+    # Pass the students to the HTML template
+    return render_template('view_student.html', students=students)
+
+@app.route('/view_report/<int:student_id>', methods=['POST'])
+def view_report(student_id):
+    # Get a database connection
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Query to get the student's report details (adjust this to your needs)
+    query = "SELECT * FROM users WHERE id = %s"
+    cursor.execute(query, (student_id,))
+    student_report = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if student_report:
+        # Render the report details (you need to create the report template)
+        return render_template('view_report.html', student=student_report)
+    else:
+        return "Student report not found", 404
 
 
 
