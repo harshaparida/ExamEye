@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='design.css') }}">
+</head>
+<body>
+    <h1>Questions</h1>
+    <ul>
+        {% for question in questions %}
+            <li>{{ question[1] }}</li>  <!-- Assuming question[1] is the question text -->
+        {% endfor %}
+    </ul>
+</body>
+</html>

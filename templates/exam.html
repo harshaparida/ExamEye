@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Feed</title>
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between; /* Space out the containers */
+    padding: 20px;
+}
+
+.question-container, .video-container {
+    background-color: #fff; /* White background for each section */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    padding: 20px;
+    margin: 10px;
+    flex: 1; /* Make them take equal space */
+}
+
+.question-container {
+    margin-right: 20px; /* Space between question and video container */
+}
+
+h1 {
+    color: #4A90E2; /* Header color */
+}
+
+p {
+    margin: 10px 0; /* Space between questions */
+}
+
+.video-container img {
+    max-width: 100%; /* Responsive image */
+    height: auto; /* Maintain aspect ratio */
+    border: 1px solid #ddd; /* Light border around the video feed */
+    border-radius: 5px; /* Rounded corners */
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack the containers on smaller screens */
+    }
+    .question-container {
+        margin-right: 0; /* Remove margin on small screens */
+        margin-bottom: 20px; /* Add bottom margin */
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="question-container">
+             <h1>Answer Questions</h1>
+            <form action="" method="post">
+                {% for question in questions %}
+                    <p>Question {{ loop.index }}: {{ question[1] }}</p>
+                    <textarea name="{{ question[0] }}"></textarea>
+                    <br>
+                {% endfor %}
+                <input type="submit" value="Submit Answers">
+            </form>
+
+        </div>
+        <div class="video-container">
+            <h1>Video Feed</h1>
+            <img src="{{ url_for('video_feed') }}" width="500" height="500" alt="Video Feed">
+        </div>
+    </div>
+</body>
+</html>
