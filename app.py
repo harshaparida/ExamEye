@@ -11,7 +11,7 @@ from mouth_detection_movement import initialize_face_mesh as init_mouth_detectio
 from detectPerson import load_model as load_ssd, initialize_classes_and_colors, preprocess_frame, detect_objects, process_detections
 from flask import Flask, render_template, request, redirect, url_for
 import pymysql
-from flask_login import current_user
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -35,6 +35,7 @@ def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
+
 
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
@@ -71,6 +72,39 @@ def login():
 
         # If login fails
         flash("Invalid username or password")
+
+        # Check if the user is an admin
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)  # Fetch result as dictionary to access columns by name
+
+        cursor.execute("SELECT * FROM admin_credentials WHERE username=%s AND password=%s", (username, password))
+        admin = cursor.fetchone()
+
+        if admin:
+            # Store the necessary admin info in the session
+            session['admin_id'] = admin['admin_id']
+            session['admin_username'] = admin['username']
+
+            flash("Admin login successful!")
+            return redirect("/admin")
+        else:
+            # Query the database to verify the username and password for regular users
+            cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s", (username, password))
+            user = cursor.fetchone()
+
+            if user:
+                # Store the necessary user info in the session
+                session['user_id'] = user['id']
+                session['username'] = user['username']
+                session['full_name'] = user['full_name']
+                session['photo'] = user['photo_filename']  # Store photo filename for dashboard
+
+                flash("Login successful!")
+                return redirect("/dashboard")
+            else:
+                flash("Invalid username or password")
+
+
         cursor.close()
         conn.close()
 
@@ -146,10 +180,17 @@ def logout():
     session.clear()
     return jsonify({'success': True})
 
+
 # @app.route('/exam')
 # def exam():
 #     # Your exam route code here
 #     return render_template('exam.html')
+
+@app.route('/exam')
+def exam():
+    # Your exam route code here
+    return render_template('exam.html')
+
 
 @app.route('/video_feed')
 def video_feed():
@@ -312,6 +353,7 @@ def view_report(student_id):
         return "Student report not found", 404
 
 
+
 # student side for answering questions
 @app.route('/exam', methods=['GET', 'POST'])
 def exam():
@@ -356,6 +398,7 @@ def exam():
 
         # Return the questions
         return render_template('exam.html', questions=questions)
+
 
 
 
