@@ -11,6 +11,9 @@ from mouth_detection_movement import initialize_face_mesh as init_mouth_detectio
 from detectPerson import load_model as load_ssd, initialize_classes_and_colors, preprocess_frame, detect_objects, process_detections
 from flask import Flask, render_template, request, redirect, url_for
 import pymysql
+import matplotlib.pyplot as plt
+import io
+import base64
 
 
 app = Flask(__name__)
@@ -181,15 +184,7 @@ def logout():
     return jsonify({'success': True})
 
 
-# @app.route('/exam')
-# def exam():
-#     # Your exam route code here
-#     return render_template('exam.html')
 
-@app.route('/exam')
-def exam():
-    # Your exam route code here
-    return render_template('exam.html')
 
 
 @app.route('/video_feed')
@@ -253,6 +248,14 @@ def gen_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     cap.release()
+
+
+
+
+
+
+
+
 
 # admin part
 
@@ -332,25 +335,18 @@ def view_students():
     # Pass the students to the HTML template
     return render_template('view_student.html', students=students)
 
-@app.route('/view_report/<int:student_id>', methods=['POST'])
+@app.route('/admin/view_report/<int:student_id>')
 def view_report(student_id):
-    # Get a database connection
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    # Query to get the student's report details (adjust this to your needs)
-    query = "SELECT * FROM users WHERE id = %s"
-    cursor.execute(query, (student_id,))
-    student_report = cursor.fetchone()
-
-    cursor.close()
-    conn.close()
-
-    if student_report:
-        # Render the report details (you need to create the report template)
-        return render_template('view_report.html', student=student_report)
-    else:
-        return "Student report not found", 404
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor()
+        query = "SELECT q.text, a.text FROM answers a JOIN questions q ON a.question_id = q.id WHERE a.student_id = %s"
+        cursor.execute(query, (student_id,))
+        answers = cursor.fetchall()
+        return render_template('view_report.html', student_id=student_id, answers=answers)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        return "Error: Unable to retrieve answers", 500
 
 
 
@@ -399,6 +395,8 @@ def exam():
         # Return the questions
         return render_template('exam.html', questions=questions)
 
+
+# generating graph for the detection
 
 
 

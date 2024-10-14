@@ -50,9 +50,7 @@
                   </td>
                   <td>{{ student.username }}</td>
                   <td>
-                      <form action="{{ url_for('view_report', student_id=student.id) }}" method="POST">
-                          <button type="submit">View Report</button>
-                      </form>
+                       <a href="{{ url_for('view_report', student_id=student.id) }}">View Report</a>
                   </td>
               </tr>
           {% endfor %}
