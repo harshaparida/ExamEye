@@ -8,8 +8,9 @@ import time
 from detect_head_movement import initialize_face_mesh as init_head_pose, process_frame as process_head_pose
 from detectPhone import load_model as load_yolo, perform_detection as detect_cell_phone, process_results as process_cell_phone
 from mouth_detection_movement import initialize_face_mesh as init_mouth_detection, process_image as process_mouth_image, get_landmarks, detect_mouth_opening, draw_results as draw_mouth_results
-from detectPerson import load_model as load_ssd, initialize_classes_and_colors, preprocess_frame, detect_objects, process_detections
+# from detectPerson import load_model as load_ssd, initialize_classes_and_colors, preprocess_frame, detect_objects, process_detections
 from flask import Flask, render_template, request, redirect, url_for
+from detectPerson import load_model, initialize_classes_and_colors, preprocess_frame, detect_objects, process_detections
 import pymysql
 import matplotlib.pyplot as plt
 import io
@@ -191,13 +192,70 @@ def logout():
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# def gen_frames():
+#     # Initialize all models and required objects
+#     face_mesh_head_pose = init_head_pose()
+#     yolo_model = load_yolo()
+#     face_mesh_mouth = init_mouth_detection()
+#     ssd_net = load_ssd('models/MobileNetSSD_deploy.prototxt', 'models/MobileNetSSD_deploy.caffemodel')
+#     classes, colors = initialize_classes_and_colors()
+#
+#     # Initialize webcam
+#     cap = cv2.VideoCapture(0)
+#
+#     # Parameters for mouth opening detection
+#     threshold = 20
+#     cheating_duration_threshold = 2.0
+#     cheating_frequency_threshold = 3
+#     cheating_period = 10
+#     mouth_open_start_time = None
+#     mouth_open_times = []
+#
+#     while cap.isOpened():
+#         success, frame = cap.read()
+#         if not success:
+#             print("Failed to grab frame")
+#             break
+#
+#         # Head Pose Estimation
+#         frame = process_head_pose(frame, face_mesh_head_pose)
+#
+#         # Cell Phone Detection
+#         cell_phone_results = detect_cell_phone(frame, yolo_model)
+#         frame = process_cell_phone(frame, cell_phone_results)
+#
+#         # Mouth Opening Detection
+#         if isinstance(frame, tuple):  # Check if frame is a tuple
+#             frame = frame[0]  # If it's a tuple, use the first element
+#         mouth_results, _ = process_mouth_image(frame, face_mesh_mouth)
+#         if mouth_results.multi_face_landmarks:
+#             for face_landmarks in mouth_results.multi_face_landmarks:
+#                 landmarks_px = get_landmarks(face_landmarks, frame.shape)
+#                 current_time = time.time()
+#                 cheating_detected, mouth_open_start_time, mouth_open_times = detect_mouth_opening(
+#                     landmarks_px, threshold, current_time, mouth_open_start_time, mouth_open_times,
+#                     cheating_duration_threshold, cheating_period
+#                 )
+#                 frame = draw_mouth_results(frame, cheating_detected, mouth_open_times, cheating_frequency_threshold)
+#
+#         # Webcam Object Detection
+#         blob, h, w = preprocess_frame(frame)
+#         detected_objects = detect_objects(ssd_net, blob)
+#         frame = process_detections(frame, detected_objects, classes, colors, 0.2, h, w)
+#
+#         ret, buffer = cv2.imencode('.jpg', frame)
+#         frame = buffer.tobytes()
+#         yield (b'--frame\r\n'
+#                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+#
+#     cap.release()
+
 def gen_frames():
     # Initialize all models and required objects
     face_mesh_head_pose = init_head_pose()
-    yolo_model = load_yolo()
+    yolo_model = load_model()  # Load YOLOv5 model
     face_mesh_mouth = init_mouth_detection()
-    ssd_net = load_ssd('models/MobileNetSSD_deploy.prototxt', 'models/MobileNetSSD_deploy.caffemodel')
-    classes, colors = initialize_classes_and_colors()
+    classes = initialize_classes_and_colors()  # Initialize classes for YOLOv5
 
     # Initialize webcam
     cap = cv2.VideoCapture(0)
@@ -219,8 +277,8 @@ def gen_frames():
         # Head Pose Estimation
         frame = process_head_pose(frame, face_mesh_head_pose)
 
-        # Cell Phone Detection
-        cell_phone_results = detect_cell_phone(frame, yolo_model)
+        # Cell Phone Detection (using YOLOv5)
+        cell_phone_results = detect_cell_phone(frame, yolo_model)  # You may need to implement this function
         frame = process_cell_phone(frame, cell_phone_results)
 
         # Mouth Opening Detection
@@ -237,19 +295,17 @@ def gen_frames():
                 )
                 frame = draw_mouth_results(frame, cheating_detected, mouth_open_times, cheating_frequency_threshold)
 
-        # Webcam Object Detection
-        blob, h, w = preprocess_frame(frame)
-        detected_objects = detect_objects(ssd_net, blob)
-        frame = process_detections(frame, detected_objects, classes, colors, 0.2, h, w)
+        # Webcam Object Detection with YOLOv5
+        results = detect_objects(yolo_model, frame)  # Detect objects using YOLOv5
+        frame = process_detections(frame, results, classes)  # Process detections
 
+        # Encode the frame to JPEG format
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     cap.release()
-
-
 
 
 
