@@ -1,73 +1,85 @@
-/* Global Styles */
-
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5; /* Light gray background */
+    background-color: #f4f4f4; /* Light gray background */
+    margin: 0;
+    padding: 20px;
 }
 
 .container {
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    margin: 40px auto;
+    max-width: 800px; /* Center the container */
+    margin: 0 auto; /* Center the container */
     background-color: #fff; /* White background for the container */
-    border: 1px solid #ddd; /* Light gray border */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    padding: 20px;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 20px; /* Padding inside the container */
 }
 
-/* Profile Section */
-
 .profile {
-    width: 20%;
-    margin-right: 20px;
-    text-align: center;
-    background-color: #337ab7; /* UMS blue color */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Center align the profile */
+    margin-bottom: 20px; /* Space below the profile section */
 }
 
 .profile img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-    border: 3px solid #fff; /* White border around the profile picture */
+    border-radius: 50%; /* Circular profile picture */
+    width: 100px; /* Fixed width for the image */
+    height: 100px; /* Fixed height for the image */
 }
 
-.profile h2 {
-    color: #fff; /* White text color */
-    margin-top: 0;
+h2 {
+    color: #333; /* Dark gray color for headings */
 }
 
-/* Exam Information Section */
-
-.exam-info {
-    width: 80%;
-    padding: 20px;
-}
-
-.exam-info h2 {
-    color: #337ab7; /* UMS blue color */
-    margin-top: 0;
-}
-
-.exam-info p {
-    color: #666; /* Dark gray text color */
-}
-
-/* Start Exam Button */
-
-.start-exam-btn {
-    background-color: #337ab7; /* UMS blue color */
-    color: #fff; /* White text color */
+button {
     padding: 10px 20px;
+    background-color: #4CAF50; /* Green background */
+    color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 5px; /* Rounded corners */
     cursor: pointer;
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth background and transform transition */
 }
 
-.start-exam-btn:hover {
-    background-color: #23527c; /* Darker UMS blue color on hover */
+button:hover {
+    background-color: #45a049; /* Darker green on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.rules {
+    background-color: #e7f3fe; /* Light blue background for rules */
+    border-left: 6px solid #2196F3; /* Blue left border */
+    padding: 15px;
+    margin-top: 20px; /* Space above the rules section */
+    border-radius: 5px; /* Rounded corners */
+}
+
+.rules h3 {
+    margin-top: 0; /* Remove top margin for h3 */
+    color: #2196F3; /* Blue color for the rules heading */
+}
+
+.rules ul {
+    padding-left: 20px; /* Indent the list */
+}
+
+.rules li {
+    margin-bottom: 10px; /* Space between list items */
+}
+
+.exam-actions {
+    text-align: center; /* Center align the exam actions */
+    margin-top: 20px; /* Space above the button section */
+}
+
+.exam-actions button {
+    background-color: #007bff; /* Bootstrap primary color */
+    font-size: 18px; /* Larger font size for the button */
+    padding: 12px 30px; /* Larger padding for a more prominent button */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+}
+
+.exam-actions button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
 }

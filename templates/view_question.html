@@ -4,16 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Questions</title>
-
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='design.css') }}">
-
 </head>
-<body>
-    <h1>Questions</h1>
-    <ul>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px;">
+    <h1 style="text-align: center; color: #333;">Questions</h1>
+    <ul style="list-style-type: none; padding: 0;">
         {% for question in questions %}
-            <li>{{ question[1] }}</li>  <!-- Assuming question[1] is the question text -->
+            <li style="margin: 10px 0; padding: 10px; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);">
+                {{ question[1] }}  <!-- Assuming question[1] is the question text -->
+            </li>
         {% endfor %}
     </ul>
+
+    <button id="back-button" onclick="goBack()"
+            style="background-color: #007bff; color: #fff; padding: 10px 20px; border: none;
+                   border-radius: 5px; cursor: pointer; margin: 20px auto; display: block;
+                   width: 20%; text-align: center;">
+        Back to Dashboard
+    </button>
+
+    <script>
+        function goBack() {
+            // Redirect to the dashboard URL
+            window.location.href = '{{ url_for("admin_page") }}'; // Replace with your dashboard URL
+        }
+    </script>
 </body>
 </html>

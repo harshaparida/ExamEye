@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -57,8 +58,8 @@ p {
         margin-bottom: 20px; /* Add bottom margin */
     }
 }
-
     </style>
+</head>
 <body>
     <div class="container">
         <div class="question-container">
@@ -80,8 +81,25 @@ p {
             <img src="{{ url_for('video_feed') }}" width="500" height="500" alt="Video Feed">
         </div>
     </div>
+
+    <div id="alert" style="display:none; background-color: red; color: white; padding: 10px;">
+    Cheating detected!
+</div>
+
+    <script>
+
+    const eventSource = new EventSource('/cheating_alert');
+    eventSource.onmessage = function(event) {
+        const alertDiv = document.getElementById('alert');
+        alertDiv.style.display = 'block'; // Show the alert
+        alertDiv.innerText = event.data; // Set the alert message
+        setTimeout(() => {
+            alertDiv.style.display = 'none'; // Hide after 5 seconds
+        }, 5000);
+    };
+
+</script>
+
+
 </body>
 </html>
-
-
-

@@ -2,25 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <title>Admin Dashboard</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eaeaea;
+            background-color: #f4f7fa; /* Lighter background for a clean look */
             margin: 0;
             padding: 0;
             text-align: center;
         }
         h1 {
-            background-color: #4A90E2;
+            background-color: #4A90E2; /* Header color */
             color: white;
             padding: 20px;
             margin: 0;
-            border-bottom: 3px solid #3E80B0; /* Bottom border for emphasis */
+            border-bottom: 3px solid #3E80B0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            transition: background-color 0.3s ease; /* Smooth transition for header */
+        }
+        h1:hover {
+            background-color: #3E80B0; /* Darker shade on hover */
         }
         .dashboard-button {
-            background-color: #5C6BC0; /* Color for buttons */
+            background-color: #5C6BC0; /* Button color */
             color: white;
             padding: 15px 30px;
             margin: 20px;
@@ -30,8 +34,25 @@
             display: inline-block;
             border: none;
             cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow transition */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            position: relative; /* For pseudo-element positioning */
+            overflow: hidden; /* Ensures that the effect stays within the button */
+            transition: all 0.4s ease; /* Smooth transition for all properties */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 300%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3); /* Light overlay effect */
+            transform: translateX(-50%) translateY(-100%);
+            transition: transform 0.4s ease; /* Smooth transition for overlay */
+            z-index: 0; /* Behind the text */
+        }
+        .dashboard-button:hover::before {
+            transform: translateX(-50%) translateY(0); /* Slide down effect */
         }
         .dashboard-button:hover {
             background-color: #4A54F1; /* Darker shade on hover */
@@ -41,7 +62,24 @@
         #logout-button {
             background-color: #FF3D00; /* Color for logout button */
             margin-top: 50px;
-            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow transition */
+            transition: all 0.4s ease; /* Smooth transition */
+            position: relative; /* For pseudo-element positioning */
+            overflow: hidden; /* Ensures that the effect stays within the button */
+        }
+        #logout-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 300%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3); /* Light overlay effect */
+            transform: translateX(-50%) translateY(-100%);
+            transition: transform 0.4s ease; /* Smooth transition for overlay */
+            z-index: 0; /* Behind the text */
+        }
+        #logout-button:hover::before {
+            transform: translateX(-50%) translateY(0); /* Slide down effect */
         }
         #logout-button:hover {
             background-color: #FF5722; /* Darker shade on hover */
@@ -51,24 +89,37 @@
     </style>
 </head>
 <body>
-  <h1>Admin Dashboard</h1>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <main>
+        <section class="dashboard-section">
+            <h2>Manage Questions</h2>
+            <div class="button-group">
+                <a href="{{ url_for('upload_question') }}">
+                    <button class="dashboard-button">Upload Question</button>
+                </a>
+                <a href="{{ url_for('view_questions') }}">
+                    <button class="dashboard-button">View Questions</button>
+                </a>
+                <a href="{{ url_for('reset_questions') }}">
+                    <button class="dashboard-button">Reset Questions</button>
+                </a>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <h2>Manage Students</h2>
+            <div class="button-group">
+                <a href="{{ url_for('view_students') }}">
+                    <button class="dashboard-button">View Students</button>
+                </a>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <button id="logout-button">Logout</button>
+    </footer>
 
-  <a href="{{ url_for('upload_question') }}">
-      <button class="dashboard-button">Upload Question</button>
-  </a>
-  <a href="{{ url_for('view_questions') }}">
-      <button class="dashboard-button">View Questions</button>
-  </a>
-  <a href="{{ url_for('reset_questions') }}">
-      <button class="dashboard-button">Reset Questions</button>
-  </a>
-  <a href="{{ url_for('view_students') }}">
-      <button class="dashboard-button">View Students</button>
-  </a>
-
-  <button id="logout-button">Logout</button>
-
-  <script src="static/script.js"></script>
+    <script src="static/script.js"></script>
 </body>
 </html>
-

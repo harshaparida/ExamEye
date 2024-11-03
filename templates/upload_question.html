@@ -5,6 +5,22 @@
     <title>Upload Question</title>
     <style>
         /* Add some basic styling to the form */
+        #back-button {
+            background-color: #007bff; /* Bootstrap primary color */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto; /* Added margin for spacing */
+            display: block; /* Makes the button a block element */
+            width: 20%; /* Set width to 50% or any value you prefer */
+            text-align: center; /* Center text inside the button */
+        }
+
+        #back-button:hover {
+            background-color: #0056b3; /* Darker shade for hover effect */
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
@@ -52,5 +68,12 @@
         <textarea id="question" name="question"></textarea>
         <input type="submit" value="Upload Question">
     </form>
+    <button id="back-button" onclick="goBack()">Back to Dashboard</button>
+    <script>
+        function goBack() {
+            // Redirect to the dashboard URL
+            window.location.href = '{{ url_for("admin_page") }}'; // Replace with your dashboard URL
+        }
+    </script>
 </body>
 </html>
