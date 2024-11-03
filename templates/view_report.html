@@ -1,3 +1,38 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>View Report</title>-->
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
+<!--</head>-->
+<!--<body>-->
+<!--    &lt;!&ndash; admin_view_report.html &ndash;&gt;-->
+
+<!--    <div class="container">-->
+<!--        <h1>Student Report for {{ student_id }}</h1>-->
+<!--        <p>-->
+<!--            <a href="events.html" class="btn btn-primary">Video Feed Results</a>-->
+<!--        </p>-->
+
+<!--        <div class="report-section">-->
+<!--            <h2>Answers</h2>-->
+
+<!--            <table class="table">-->
+<!--                <tr>-->
+<!--                    <th>Question</th>-->
+<!--                    <th>Answer</th>-->
+<!--                </tr>-->
+<!--                {% for answer in answers %}-->
+<!--                    <tr>-->
+<!--                        <td>{{ answer[0] }}</td>-->
+<!--                        <td>{{ answer[1] }}</td>-->
+<!--                    </tr>-->
+<!--                {% endfor %}-->
+<!--            </table>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,28 +40,55 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <!-- admin_view_report.html -->
-
     <div class="container">
         <h1>Student Report for {{ student_id }}</h1>
-        <p>
-            <a href="events.html" class="btn btn-primary">Video Feed Results</a>
-        </p>
+<!--        <p>-->
+<!--            <a href="events.html" class="btn btn-primary">Video Feed Results</a>-->
+<!--        </p>-->
 
         <div class="report-section">
             <h2>Answers</h2>
-
             <table class="table">
-                <tr>
-                    <th>Question</th>
-                    <th>Answer</th>
-                </tr>
-                {% for answer in answers %}
+                <thead>
                     <tr>
-                        <td>{{ answer[0] }}</td>
-                        <td>{{ answer[1] }}</td>
+                        <th>Question</th>
+                        <th>Answer</th>
                     </tr>
-                {% endfor %}
+                </thead>
+                <tbody>
+                    {% for answer in answers %}
+                        <tr>
+                            <td>{{ answer[0] }}</td>
+                            <td>{{ answer[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="report-section">
+            <h2>Cheating Events</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Event Type</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if cheating_events %}
+                        {% for event in cheating_events %}
+                            <tr>
+                                <td>{{ event[0] }}</td>
+                                <td>{{ event[1] }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="2">No cheating events recorded for this student.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
             </table>
         </div>
     </div>

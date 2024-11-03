@@ -1083,6 +1083,15 @@ def gen_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
+@app.route('/cheating_events')
+def cheating_events():
+    cur = mysql.connector.cursor()  # Create a cursor object
+    cur.execute("SELECT * FROM cheating_events")  # Execute the SQL query
+    results = cur.fetchall()  # Fetch all results
+    cur.close()  # Close the cursor
+
+    return render_template('cheating_events.html', events=results)
+
 
 
 
@@ -1172,18 +1181,53 @@ def view_students():
     # Pass the students to the HTML template
     return render_template('view_student.html', students=students)
 
+# @app.route('/admin/view_report/<int:student_id>')
+# def view_report(student_id):
+#     try:
+#         cnx = get_db_connection()
+#         cursor = cnx.cursor()
+#         query = "SELECT q.text, a.text FROM answers a JOIN questions q ON a.question_id = q.id WHERE a.student_id = %s"
+#         cursor.execute(query, (student_id,))
+#         answers = cursor.fetchall()
+#         return render_template('view_report.html', student_id=student_id, answers=answers)
+#     except mysql.connector.Error as err:
+#         print("Something went wrong: {}".format(err))
+#         return "Error: Unable to retrieve answers", 500
+
 @app.route('/admin/view_report/<int:student_id>')
 def view_report(student_id):
     try:
         cnx = get_db_connection()
         cursor = cnx.cursor()
-        query = "SELECT q.text, a.text FROM answers a JOIN questions q ON a.question_id = q.id WHERE a.student_id = %s"
-        cursor.execute(query, (student_id,))
+
+        # Query to fetch answers
+        answers_query = """
+            SELECT q.text, a.text 
+            FROM answers a 
+            JOIN questions q ON a.question_id = q.id 
+            WHERE a.student_id = %s
+        """
+        cursor.execute(answers_query, (student_id,))
         answers = cursor.fetchall()
-        return render_template('view_report.html', student_id=student_id, answers=answers)
+
+        # Query to fetch cheating events
+        cheating_events_query = """
+            SELECT event_type, timestamp 
+            FROM cheating_events 
+            WHERE student_id = %s
+        """
+        cursor.execute(cheating_events_query, (student_id,))
+        cheating_events = cursor.fetchall()
+
+        return render_template('view_report.html', student_id=student_id, answers=answers,
+                               cheating_events=cheating_events)
+
     except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))
         return "Error: Unable to retrieve answers", 500
+    finally:
+        cursor.close()
+        cnx.close()
 
 
 

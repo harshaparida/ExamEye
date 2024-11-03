@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheating Events Log</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cheating Events List</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Student ID</th>
+            <th>Event Type</th>
+            <th>Timestamp</th>
+        </tr>
+        {% for event in events %}
+        <tr>
+            <td>{{ event[0] }}</td>  <!-- Assuming ID is the first column -->
+            <td>{{ event[1] }}</td>  <!-- Assuming Student ID is the second column -->
+            <td>{{ event[2] }}</td>  <!-- Assuming Event Type is the third column -->
+            <td>{{ event[3] }}</td>  <!-- Assuming Timestamp is the fourth column -->
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
