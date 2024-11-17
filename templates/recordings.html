@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Recordings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            position: relative; /* Allow absolute positioning for the button */
+        }
+
+        h1 {
+            text-align: center;
+            color: #4A90E2;
+        }
+
+        .recording-list {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .recording-item {
+            margin-bottom: 20px;
+        }
+
+        video {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        /* Styles for the circular back button */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #4A90E2; /* Button color */
+            color: white;
+            border: none;
+            border-radius: 50%; /* Circular shape */
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #357ABD; /* Darker shade on hover */
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()">&#8592;</button> <!-- Back button -->
+
+    <h1>Uploaded Recordings</h1>
+    <div class="recording-list">
+        {% if recordings %}
+            {% for recording in recordings %}
+                <div class="recording-item">
+                    <video controls>
+                        <source src="{{ url_for('serve_recording', filename=recording) }}" type="video/webm">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p>{{ recording }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No recordings available.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        // Function to go back to the admin page
+        function goBack() {
+            window.location.href = '/admin'; // Replace with the actual admin URL
+        }
+    </script>
+</body>
+</html>

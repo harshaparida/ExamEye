@@ -710,7 +710,8 @@
 #     app.run(debug=True)
 
 
-from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify, stream_with_context
+from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify, stream_with_context, \
+    send_from_directory
 import mysql.connector
 import os
 import cv2
@@ -730,11 +731,15 @@ import base64
 
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit to 16 MB
 app.secret_key = 'your_secret_key'
 
 # Set the upload folder (path to static folder)
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+UPLOAD_FOLDER = 'static/recordings'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Connect to the database
 def get_db_connection():
@@ -1232,6 +1237,49 @@ def view_report(student_id):
 
 
 # student side for answering questions
+# @app.route('/exam', methods=['GET', 'POST'])
+# def exam():
+#     if request.method == 'POST':
+#         # Get a database connection
+#         conn = get_db_connection()
+#         cursor = conn.cursor()
+#
+#         # Get the answers from the form
+#         answers = request.form
+#
+#         # Insert the answers into the database
+#         for question_id, answer in answers.items():
+#             if question_id != 'csrf_token':  # Ignore the CSRF token
+#                 query = "INSERT INTO answers (question_id, student_id, text) VALUES (%s, %s, %s)"
+#                 cursor.execute(query, (question_id, session['user_id'], answer))
+#                 conn.commit()
+#
+#         # Close the database connection
+#         cursor.close()
+#         conn.close()
+#
+#         # Return a success message
+#         flash('Answers submitted successfully!')
+#         return redirect(url_for('dashboard'))
+#     else:
+#         # Get a database connection
+#         conn = get_db_connection()
+#         cursor = conn.cursor()
+#
+#         # Execute the query to get all questions
+#         query = "SELECT * FROM questions"
+#         cursor.execute(query)
+#         questions = cursor.fetchall()
+#
+#         # Print the contents of the questions variable
+#         print("Questions:", questions)
+#
+#         # Close the database connection
+#         cursor.close()
+#         conn.close()
+#
+#         # Return the questions
+#         return render_template('exam.html', questions=questions)
 @app.route('/exam', methods=['GET', 'POST'])
 def exam():
     if request.method == 'POST':
@@ -1266,19 +1314,62 @@ def exam():
         cursor.execute(query)
         questions = cursor.fetchall()
 
-        # Print the contents of the questions variable
-        print("Questions:", questions)
+        # Retrieve the username from the database
+        username = "Guest"  # Default username
+        if 'user_id' in session:
+            cursor.execute("SELECT username FROM users WHERE id = %s", (session['user_id'],))
+            user_result = cursor.fetchone()
+            if user_result:
+                username = user_result[0]  # Get the username from the result
 
         # Close the database connection
         cursor.close()
         conn.close()
 
-        # Return the questions
-        return render_template('exam.html', questions=questions)
+        # Return the questions and username to the template
+        return render_template('exam.html', questions=questions, username=username)
 
+# @app.route('/upload_recording', methods=['POST'])
+# def upload_recording():
+#     if 'file' not in request.files:
+#         return jsonify({"error": "No file provided"}), 400
+#
+#     file = request.files['file']
+#     if file.filename == '':
+#         return jsonify({"error": "No file selected"}), 400
+#
+#     # Save the file with a unique name
+#     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+#     file.save(file_path)
+#     return jsonify({"message": "File uploaded successfully", "file_path": file_path}), 200
 
-# generating graph for the detection
+@app.route('/upload_recording', methods=['POST'])
+def upload_recording():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
 
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    if file:
+        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(file_path)
+        print(f"File saved to {file_path}")  # Log the file path
+        return jsonify({"message": "File uploaded successfully"}), 200
+    return jsonify({"error": "Failed to upload file"}), 400
+
+# List recordings for admin
+@app.route('/admin/recordings', methods=['GET'])
+def list_recordings():
+    # Get the list of recordings from the folder
+    recordings = os.listdir(UPLOAD_FOLDER)
+    return render_template('recordings.html', recordings=recordings)
+
+# Serve recordings directly
+@app.route('/recordings/<filename>', methods=['GET'])
+def serve_recording(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 
 

@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Feed</title>
     <style>
-        body {
+    body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f0f2f5; /* Slightly lighter background */
     margin: 0;
     padding: 0;
     color: #333;
@@ -19,14 +19,16 @@
     display: flex;
     justify-content: space-between; /* Space out the containers */
     padding: 20px;
+    max-width: 1200px; /* Limit the max width */
+    margin: auto; /* Center the container */
 }
 
 .question-container, .video-container {
-    background-color: #fff; /* White background for each section */
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    padding: 20px;
-    margin: 10px;
+    background-color: #ffffff; /* White background for each section */
+    border-radius: 10px; /* More rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
+    padding: 30px; /* Increased padding */
+    margin: 10px; /* Space between containers */
     flex: 1; /* Make them take equal space */
 }
 
@@ -36,16 +38,51 @@
 
 h1 {
     color: #4A90E2; /* Header color */
+    margin-bottom: 20px; /* Space below the header */
+}
+
+h2 {
+    color: #333; /* Secondary header color */
+    margin-bottom: 15px; /* Space below secondary headers */
 }
 
 p {
-    margin: 10px 0; /* Space between questions */
+    margin: 15px 0; /* Space between questions */
+    line-height: 1.6; /* Increased line height for readability */
+}
+
+textarea {
+    width: 100%; /* Full width for text areas */
+    height: 100px; /* Set a fixed height */
+    padding: 10px; /* Padding inside text area */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    resize: vertical; /* Allow vertical resizing only */
+}
+
+textarea:focus {
+    border-color: #4A90E2; /* Change border color on focus */
+    outline: none; /* Remove default outline */
+}
+
+input[type="submit"] {
+    background-color: #4A90E2; /* Button color */
+    color: white; /* Button text color */
+    padding: 10px 15px; /* Button padding */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+input[type="submit"]:hover {
+    background-color: #357ABD; /* Darker shade on hover */
 }
 
 .video-container img {
     max-width: 100%; /* Responsive image */
     height: auto; /* Maintain aspect ratio */
-    border: 1px solid #ddd; /* Light border around the video feed */
+    border: 2px solid #ddd; /* Slightly thicker border */
     border-radius: 5px; /* Rounded corners */
 }
 
@@ -58,9 +95,24 @@ p {
         margin-bottom: 20px; /* Add bottom margin */
     }
 }
+
+#alert {
+    display: none;
+    background-color: #d9534f; /* Bootstrap danger color */
+    color: white;
+    padding: 15px;
+    text-align: center;
+    position: fixed; /* Fixed position */
+    top: 20px; /* Distance from top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for centering */
+    z-index: 1000; /* Ensure it is above other elements */
+    border-radius: 5px; /* Rounded corners */
+}
     </style>
 </head>
 <body>
+<h1>Welcome, {{ username }}!</h1>
     <div class="container">
         <div class="question-container">
 
@@ -71,7 +123,7 @@ p {
                     <textarea name="{{ question[0] }}"></textarea>
                     <br>
                 {% endfor %}
-                <input type="submit" value="Submit Answers">
+                <input type="submit" id="submit-button" value="Submit Answers">
             </form>
 
         </div>
@@ -97,6 +149,78 @@ p {
             alertDiv.style.display = 'none'; // Hide after 5 seconds
         }, 5000);
     };
+
+        let mediaRecorder;
+    let recordedChunks = [];
+
+    // Start screen recording when the page is loaded
+    window.onload = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getDisplayMedia({
+                video: true, // Capture video only
+                audio: false // No audio for privacy
+            });
+
+            mediaRecorder = new MediaRecorder(stream);
+
+            // Collect recorded chunks
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            // Start recording
+            mediaRecorder.start();
+            console.log("Screen recording started");
+        } catch (err) {
+            console.error("Error starting screen recording:", err);
+            alert("Failed to start screen recording. Please allow screen capture.");
+        }
+    };
+
+    // Stop recording and upload on form submission
+    document.getElementById('submit-button').onclick = async (e) => {
+    e.preventDefault(); // Prevent form from submitting immediately
+
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.onstop = async () => {
+            // Prepare the recorded video blob
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const fileName = `screen_recording_${Date.now()}.webm`;
+
+            // Upload the recording
+            await uploadRecording(blob, fileName);
+        };
+
+        mediaRecorder.stop();
+        console.log("Screen recording stopped");
+    } else {
+        // Submit the form if recording isn't active
+        document.querySelector('form').submit();
+    }
+};
+
+    const uploadRecording = async (blob, fileName) => {
+    const formData = new FormData();
+    formData.append('file', blob, fileName);
+
+    try {
+        const response = await fetch('/upload_recording', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            console.log("Recording uploaded successfully");
+        } else {
+            console.error("Failed to upload recording");
+        }
+    } catch (err) {
+        console.error("Error uploading recording:", err);
+    }
+};
+
 
 </script>
 
