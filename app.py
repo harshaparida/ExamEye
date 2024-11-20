@@ -100,7 +100,6 @@ def admin_page():
     else:
         return redirect(url_for('login'))
 
-# ... rest of the code remains the same ...
 
 # Route for signup page
 @app.route("/signup", methods=["GET", "POST"])
@@ -160,9 +159,6 @@ def dashboard():
 def logout():
     session.clear()
     return jsonify({'success': True})
-
-
-
 
 
 @app.route('/video_feed')
@@ -286,17 +282,6 @@ def cheating_events():
     cur.close()  # Close the cursor
 
     return render_template('cheating_events.html', events=results)
-
-
-
-
-
-
-
-
-
-
-
 
 # admin part
 
@@ -489,10 +474,6 @@ def list_recordings():
 @app.route('/recordings/<filename>', methods=['GET'])
 def serve_recording(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
-
-
-
-
 
 
 if __name__ == "__main__":
